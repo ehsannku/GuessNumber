@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Number (ehsan)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+			
+        }
+
+        td {
+            padding: 15px;
+            --border: 1px solid #000;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .green {
+            background-color: green;
+            color: white;
+        }
+
+        .red {
+            background-color: red;
+            color: white;
+        }
+        
+        
+        #labelsContainer {
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <!-- <h1>حدس عدد</h1>
+    <label for="digitCount">تعداد ارقام:</label>
+    <select id="digitCount">
+        <option value="2">2 رقمی</option>
+        <option value="3">3 رقمی</option>
+        <option value="4">4 رقمی</option>
+        <option value="5">5 رقمی</option>
+    </select>
+    <br><br>
+    <label for="rowCount">تعداد سطرها:</label>
+    <input type="number" id="rowCount" placeholder="تعداد سطرها" min="1" value="5">
+    <br><br>
+    <label for="colCount">تعداد ستون‌ها:</label>
+    <input type="number" id="colCount" placeholder="تعداد ستون‌ها" min="1" value="5">
+    <br><br>
+    <button onclick="generateNumbers()">تولید اعداد</button> -->
+	
+
+    <h1>Guess the Number</h1>
+     <label for="digitCount">Number of Digits:</label> 
+     <select id="digitCount"> 
+        <option value="2">2 Digits</option>
+         <option value="3">3 Digits</option> 
+         <option value="4">4 Digits</option> 
+         <option value="5">5 Digits</option>
+         </select> <br><br> 
+         <label for="rowCount">Number of Rows:</label> 
+         <input type="number" id="rowCount" placeholder="Number of Rows" min="1" value="5"> 
+         <br><br> 
+         <label for="colCount">Number of Columns:</label>
+        <input type="number" id="colCount" placeholder="Number of Columns" min="1" value="5">
+        <br><br> 
+        <button onclick="generateNumbers()">Generate Numbers</button>
+
+	<span id="min">00</span>:<span id="sec">00</span>
+    <div id="labelsContainer"></div>
+
+    <script>
+	var Clock = {
+  totalSeconds: 0,
+  start: function () {
+    if (!this.interval) {
+        var self = this;
+        function pad(val) { return val > 9 ? val : "0" + val; }
+        this.interval = setInterval(function () {
+          self.totalSeconds += 1;
+
+          document.getElementById("min").innerHTML = pad(Math.floor(self.totalSeconds / 60 % 60));
+          document.getElementById("sec").innerHTML = pad(parseInt(self.totalSeconds % 60));
+        }, 1000);
+    }
+  },
+
+  reset: function () {
+    Clock.totalSeconds = null; 
+    clearInterval(this.interval);
+    document.getElementById("min").innerHTML = "00";
+    document.getElementById("sec").innerHTML = "00";
+    delete this.interval;
+  },
+  pause: function () {
+    clearInterval(this.interval);
+    delete this.interval;
+  },
+
+  resume: function () {
+    this.start();
+  },
+
+  restart: function () {
+     this.reset();
+     Clock.start();
+  }
+};
+function Reset(){
+    generateNumbers();
+}
+        function generateNumbers() {
+            Clock.reset();
+            Clock.start();
+            const digitCount = document.getElementById('digitCount').value;
+            const rowCount = document.getElementById('rowCount').value;
+            const colCount = document.getElementById('colCount').value;
+            const container = document.getElementById('labelsContainer');
+            container.innerHTML = '';
+
+            const numberCount = (rowCount * colCount)-1;
+
+          
+
+            const numbers = new Set();
+            let duplicateNumber;
+
+            // تولید اعداد تصادفی
+            while (numbers.size < numberCount - 1) {
+                const number = generateRandomNumber(digitCount);
+                numbers.add(number);
+            }
+            // انتخاب عدد تکراری
+            duplicateNumber = generateRandomNumber(digitCount);
+            numbers.add(duplicateNumber);
+            //numbers.add(duplicateNumber);
+
+            // مخلوط کردن اعداد
+            const numberArray = Array.from(numbers);
+            numberArray.push(duplicateNumber);
+            shuffleArray(numberArray);
+
+            // ساخت جدول و نمایش اعداد
+            const table = document.createElement('table');
+            let index = 0;
+            let cells = [];  // برای ذخیره سلول‌ها
+
+            for (let i = 0; i < rowCount; i++) {
+                const row = document.createElement('tr');
+                for (let j = 0; j < colCount; j++) {
+                    const cell = document.createElement('td');
+                    const number = numberArray[index];
+                    cell.innerText = number;
+                    cell.onclick = () => checkDuplicate(cell, number, cells, duplicateNumber);
+                    row.appendChild(cell);
+                    cells.push(cell);  // اضافه کردن سلول به لیست
+                    index++;
+                    if(cell.innerText=='undefined'){
+                        Reset();
+                        return;
+                    }
+                        
+                }
+                table.appendChild(row);
+            }
+
+            container.appendChild(table);
+        }
+
+        function generateRandomNumber(digits) {
+            const min = Math.pow(10, digits - 1);
+            const max = Math.pow(10, digits) - 1;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function checkDuplicate(selectedCell, selectedNumber, cells, duplicateNumber) {
+            if (selectedNumber === duplicateNumber)
+            {
+                cells.forEach(cell => {
+                    if (cell.innerText === duplicateNumber.toString()) {
+                        cell.classList.add('green');
+                    }
+                });
+                Clock.pause();
+                //alert('درست است! شما عدد تکراری را پیدا کردید.');
+            } 
+            else
+            {
+                selectedCell.classList.add('red');
+                changeClassDelayed();
+                //alert('اشتباه است! این عدد تکراری نیست.');
+            }
+        }
+		
+        function changeClassDelayed() {
+    const elements = document.querySelectorAll('.red');
+    
+    elements.forEach((element, index) => {
+        setTimeout(() => {
+            element.classList.remove('red');
+        }, (index + 1) * 700); // Delay each element by 2 seconds
+    });
+}
+		
+        // setInterval(function() {
+        //     var redElements = document.querySelectorAll('.red');
+        //     redElements.forEach(function(element) {
+        //         element.classList.remove('red');
+        //     });
+        // }, 2000);
+    </script>
+
+</body>
+</html>
