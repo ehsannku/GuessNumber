@@ -66,6 +66,8 @@
          <option value="3">3 Digits</option> 
          <option value="4">4 Digits</option> 
          <option value="5">5 Digits</option>
+         <option value="6">6 Digits</option>
+         <option value="7">7 Digits</option>
          </select> <br><br> 
          <label for="rowCount">Number of Rows:</label> 
          <input type="number" id="rowCount" placeholder="Number of Rows" min="1" value="5"> 
@@ -76,9 +78,12 @@
         <button onclick="generateNumbers()">Generate Numbers</button>
 
 	<span id="min">00</span>:<span id="sec">00</span>
+    <br><br> 
+    <span >wrong: <span id="wrong">0</span></span>
     <div id="labelsContainer"></div>
 
     <script>
+        let wrongCounter=0;
 	var Clock = {
   totalSeconds: 0,
   start: function () {
@@ -119,6 +124,7 @@ function Reset(){
     generateNumbers();
 }
         function generateNumbers() {
+            wrongCounter=0;
             Clock.reset();
             Clock.start();
             const digitCount = document.getElementById('digitCount').value;
@@ -204,6 +210,7 @@ function Reset(){
             {
                 selectedCell.classList.add('red');
                 changeClassDelayed();
+                document.getElementById("wrong").innerHTML =++wrongCounter;
                 //alert('اشتباه است! این عدد تکراری نیست.');
             }
         }
