@@ -83,7 +83,7 @@
     <div id="labelsContainer"></div>
 
     <script>
-        document.getElementById("wrong").innerHTML =0;
+        let wrongCounter =0;
 	var Clock = {
   totalSeconds: 0,
   start: function () {
@@ -124,6 +124,7 @@ function Reset(){
     generateNumbers();
 }
         function generateNumbers() {
+document.getElementById("wrong").innerHTML=0;
             wrongCounter=0;
             Clock.reset();
             Clock.start();
